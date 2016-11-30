@@ -3,27 +3,23 @@
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
     #include "Wire.h"
 #endif
-
 #include "Wheel.h"
 
 MPU6050 mpu;
-
 
 Wheel leftWheel(4, 5, 3);
 Wheel rightWheel(8, 7, 6);
 
 String incomingByte;
 
-
-
-
 // Yaw tolerance.
 // when starting, the yaw value will 'drift' until some sort of internal calibration is complete.
 // when the calibration is complete, get the value and use this as an offset for point 0.
 // the yawOffset can also be used during runtime to 'trim' the axis to deal with yaw drift.
-bool yawCalibrating = true;
-double yawCalibrationAngleTolerance = 0.2;
-double yawOffset = 0.0;
+
+//bool yawCalibrating = true;
+//double yawCalibrationAngleTolerance = 0.2;
+//double yawOffset = 0.0;
 
 
 
@@ -72,19 +68,12 @@ void dmpDataReady() {
 
 
 
-
+// 
+// Range is from -255 for full reverse to 255 for full forwards. 
 void SetWheelSpeed(Wheel wheel, int Speed) {
-
-  bool forward = false;
-  bool reverse = false;
-
-  if(Speed > 0) { forward = true; }
-  if(Speed < 0) { reverse = true; }
-  
-  digitalWrite(wheel.ForwardsPin, forward);
-  digitalWrite(wheel.ReversePin, reverse);
+  digitalWrite(wheel.ForwardsPin, Speed > 0);
+  digitalWrite(wheel.ReversePin, Speed < 0);
   analogWrite(wheel.SpeedPin, abs(Speed));  
-
 }
 
 
