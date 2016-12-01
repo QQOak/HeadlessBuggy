@@ -90,10 +90,29 @@ void CalculateRotationSpeed(int CurrentAngle, int TargetAngle, int *leftWheelSpe
 
 }
 
-void wibble(int RotationSpeed, int Velocity)
+
+// Returns a float with 2 decimal point precision indicating the amount of travel required clockwise (+) rotation or
+// anti-clockwise (-) rotation, whichever is the shortest rotation.
+// Accepts the current orientation as the current angle, and the orientation that is needed.
+float CalculateRotationRequired(float CurrentAngle, float TargetAngle)
 {
 
-  
+  // Degrees difference between the current and target angles.
+  // Multiply by 10 and convert to integer so we maintain TWO decimal point precision.
+  int neededRotation = (int)((TargetAngle - CurrentAngle)*100);
+
+  // Add half a clockwise rotation to be removed after the modulus operation
+  neededRotation += 18000;
+
+  // Make sure the rotation angle does not angle exceed 359.99 degrees
+  neededRotation = neededRotation % 36000;
+
+  // Add a half anti-clockwise rotation to put output in range of -180 to +180 degrees.
+  neededRotation -= 18000;
+
+  // Divide by 10 again and return as a float to give us a single decimal point precision.
+  return ((float)(neededRotation))/100;
+   
 }
 
 void SetWheelSpeeds(int RotationSpeed, int Velocity)
@@ -182,6 +201,7 @@ void setup() {
     Serial.println("Initialising Wheels...");
     ConfigureWheelPins(leftWheel);
     ConfigureWheelPins(rightWheel);
+    SetWheelSpeeds(0, 0);
   
     Serial.println("Ready.");
 
@@ -206,6 +226,14 @@ void loop() {
         //
         // other program behavior stuff here
         //              
+
+
+
+
+
+
+
+        
     }
 
     // reset interrupt flag and get INT_STATUS byte
@@ -238,22 +266,28 @@ void loop() {
         mpu.dmpGetQuaternion(&q, fifoBuffer);
         mpu.dmpGetGravity(&gravity, &q);
         mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
-        Serial.print("ypr\t");
-        Serial.print(ypr[0] * 180/M_PI);
-        Serial.print("\t");
-        Serial.print(ypr[1] * 180/M_PI);
-        Serial.print("\t");
-        Serial.println(ypr[2] * 180/M_PI);
+
+        float Target = 0;
+        Serial.print("Rotation Required to reach ");
+        Serial.print(Target);
+        Serial.print(" : ");
+        Serial.println(CalculateRotationRequired((ypr[0] * 180/M_PI), 0));
+        
+        //Serial.print("ypr\t");
+        //Serial.println(ypr[0] * 180/M_PI);
+        //Serial.print("\t");
+        //Serial.print(ypr[1] * 180/M_PI);
+        //Serial.print("\t");
+        //Serial.println(ypr[2] * 180/M_PI);
 
        //Serial.print("Current Yaw:");
        //Serial.println(ypr[0] * 180/M_PI);
 
-        SetWheelSpeeds(0, 0);
         //SetWheelSpeed(leftWheel, leftWheelSpeed);
         //SetWheelSpeed(rightWheel, rightWheelSpeed);
 
         // blink LED to indicate activity
-        blinkState = !blinkState;
-        digitalWrite(LED_PIN, blinkState);
+        //blinkState = !blinkState;
+        //digitalWrite(LED_PIN, blinkState);
     }
 }
