@@ -10,7 +10,10 @@ MPU6050 mpu;
 Wheel leftWheel(4, 5, 3);
 Wheel rightWheel(8, 7, 6);
 
-String incomingByte;
+
+
+
+//String incomingByte;
 
 // Yaw tolerance.
 // when starting, the yaw value will 'drift' until some sort of internal calibration is complete.
@@ -22,20 +25,6 @@ String incomingByte;
 //double yawOffset = 0.0;
 
 
-
-
-
-void ConfigureWheelPins(Wheel wheel) {
-  
-  pinMode(wheel.ForwardsPin, OUTPUT);
-  pinMode(wheel.ReversePin, OUTPUT);
-  pinMode(wheel.SpeedPin, OUTPUT);
-  
-  digitalWrite(wheel.ForwardsPin, false);
-  digitalWrite(wheel.ReversePin, false);
-  analogWrite(wheel.SpeedPin, 0);
-  
-}
 
 
 
@@ -68,7 +57,22 @@ void dmpDataReady() {
 
 
 
-// 
+
+
+// Drive related functions
+// ==========================================================
+
+
+
+
+void calculateWheelSpeeds()
+{
+
+}
+
+
+
+
 // Range is from -255 for full reverse to 255 for full forwards. 
 void SetWheelSpeed(Wheel wheel, int Speed) {
   digitalWrite(wheel.ForwardsPin, Speed > 0);
@@ -115,14 +119,30 @@ float CalculateRotationRequired(float CurrentAngle, float TargetAngle)
    
 }
 
+
+
+
 void SetWheelSpeeds(int RotationSpeed, int Velocity)
 {
 
-  CalculateRotationSpeed(0, 0, &leftWheelSpeed, &rightWheelSpeed);
-  
+
   SetWheelSpeed(leftWheel, leftWheelSpeed);
   SetWheelSpeed(rightWheel, rightWheelSpeed);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 void setup() {
@@ -199,8 +219,6 @@ void setup() {
   
     
     Serial.println("Initialising Wheels...");
-    ConfigureWheelPins(leftWheel);
-    ConfigureWheelPins(rightWheel);
     SetWheelSpeeds(0, 0);
   
     Serial.println("Ready.");

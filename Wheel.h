@@ -5,11 +5,16 @@
 
 
 class Wheel {
+  
 public:
   Wheel(int ForwardsPin, int ReversePin, int SpeedPin);
   int ForwardsPin;
   int ReversePin;
-  int SpeedPin;  
+  int SpeedPin;
+  
+private:
+  void ConfigureWheelPins();
+
 };
 
 #endif
